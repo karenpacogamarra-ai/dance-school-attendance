@@ -1,41 +1,31 @@
 
-from dto.dance_class_dto import DanceClass, DanceClassCreate
-from fastapi import APIRouter
-import uuid 
+from dto.dance_class_dto import DanceClassCreate
+from fastapi import APIRouter, Depends
+from service.dance_class_service import DanceClassService
 
 
 router = APIRouter()
 dance_classes = []
 
-@router.post("/classes/")
-def create_class(dance_class: DanceClassCreate):
-
-    if len(dance_class.name) > 2:
-        print('Guardado')
-        dance_class_h = DanceClass(
-            id = str(uuid.uuid4()), 
-            name = dance_class.name, 
-            level = dance_class.level, 
-            start_time = dance_class.start_time, 
-            end_time = dance_class.end_time, 
-            cost = dance_class.cost )
-        
-        dance_classes.append(dance_class_h)
-        
-        return dance_class_h
+def get_dance_class_service():
+    return DanceClassService(dance_classes)
     
-    else:
-        print('tu estas mal, todo el maldito mundo esta mal')
+    
+
+@router.post("/classes/")
+def create_class(dance_class: DanceClassCreate, dance_class_service = Depends(get_dance_class_service)):
+    return dance_class_service.create(dance_class)
+
+    
 
 
 @router.get("/classes/")
-def get_classes():
-    return dance_classes
+def get_classes(dance_class_service = Depends(get_dance_class_service)):
+    return dance_class_service.get()
 
 
 @router.get("/classes/{id}")
-def get_student_ID(id: str):
-    for course in dance_classes:
-        if course.id == id:
-            return course
-    
+def get_class_dance_id(id: str, dance_class_service = Depends(get_dance_class_service)):
+    return dance_class_service.get_by_id(id)
+
+

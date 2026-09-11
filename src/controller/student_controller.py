@@ -1,36 +1,26 @@
-from dto.student_dto import Student, StudentCreate
-from fastapi import APIRouter
-import uuid 
+from dto.student_dto import StudentCreate
+from fastapi import APIRouter, Depends
+from service.student_service import StudentService
 
 router = APIRouter()
 students = []
 
+def get_student_services():
+    return StudentService(students)
+
 
 @router.post("/students/")
-def create_student(student: StudentCreate):
-
-    if len(student.name) > 2:
-        print('Guardado')
-        student_c = Student(
-            id = str(uuid.uuid4()),
-            name = student.name,
-            surname = student.surname,
-            age = student.age
-        )
-        students.append(student_c)
-        return student_c
-    else:
-        print('tu estas mal, todo el maldito mundo esta mal')
+def create_student(student: StudentCreate, student_service = Depends(get_student_services)):
+    return student_service.create(student)
+    
 
 
 @router.get("/students/")
-def get_student():
-        return students
+def get_student( student_service = Depends(get_student_services)):
+    return student_service.get()
 
 
 @router.get("/students/{id}")
-def get_student_ID(id: str):
-    for student in students:
-        if student.id == id:
-            return student
+def get_student_ID(id: str, student_service = Depends(get_student_services)):
+    return student_service.get_id(id)
     
