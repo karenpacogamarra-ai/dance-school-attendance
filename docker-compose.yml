@@ -1,0 +1,50 @@
+services:
+  # Servicio de la API en FastAPI
+  dance-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dance-api
+    container_name: dance_api_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=mysql+pymysql://dance_user:dance_password@db:3306/dance_db
+    networks:
+      - dance_net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Servicio de Base de Datos MariaDB
+  db:
+    image: mariadb:11.4
+    container_name: dance_api_db
+    environment:
+      MARIADB_ROOT_PASSWORD: root_password
+      MARIADB_DATABASE: dance_db
+      MARIADB_USER: dance_user
+      MARIADB_PASSWORD: dance_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - dance_net
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# Definición de la red personalizada
+networks:
+  dance_net:
+    driver: bridge
+
+# Persistencia de datos
+volumes:
+  mariadb_data:

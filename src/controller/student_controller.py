@@ -1,12 +1,14 @@
 from dto.student_dto import StudentCreate
 from fastapi import APIRouter, Depends
+from repository.student_repository import StudentRepository
 from service.student_service import StudentService
 
 router = APIRouter()
 students = []
 
 def get_student_services():
-    return StudentService(students)
+    student_repo = StudentRepository(students)
+    return StudentService(student_repo)
 
 
 @router.post("/students/")

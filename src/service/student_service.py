@@ -2,12 +2,13 @@
 import uuid
 
 from dto.student_dto import Student, StudentCreate
+from repository.student_repository import StudentRepository
 
 
 class StudentService():
 
-    def __init__(self, students):
-        self.students = students
+    def __init__(self, student_repo: StudentRepository):
+        self.student_repo = student_repo
 
     def create(self, student_create: StudentCreate):
             if len(student_create.name) > 2:
@@ -18,15 +19,13 @@ class StudentService():
                     surname = student_create.surname,
                     age = student_create.age
                 )
-                self.students.append(student_c)
+                self.student_repo.create(student_c)
                 return student_c
             else:
                 print('tu estas mal, todo el maldito mundo esta mal')
 
     def get(self):
-         return self.students
+         return self.student_repo.get()
 
     def get_id(self, id: str):
-        for student in self.students:
-            if student.id == id:
-                 return student
+        return self.student_repo.get_id(id)
