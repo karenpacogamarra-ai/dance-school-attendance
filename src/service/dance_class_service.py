@@ -2,13 +2,15 @@
 from dto.dance_class_dto import DanceClass, DanceClassCreate
 import uuid
 
+from repository.dance_class_repository import DanceClassRepository
+
 
 class DanceClassService():
 
-    def __init__(self, dance_classes):
-        self.dance_classes = dance_classes
+    def __init__(self, dance_class_repo: DanceClassRepository):
+        self.dance_class_repo = dance_class_repo
     
-    def create(self, dance_class_create: DanceClassCreate):
+    def create(self, dance_class_create: DanceClassRepository):
         if len(dance_class_create.name) > 2:
             print('Guardado')
             dance_class = DanceClass(
@@ -19,18 +21,13 @@ class DanceClassService():
                 end_time = dance_class_create.end_time, 
                 cost = dance_class_create.cost )
             
-            self.dance_classes.append(dance_class)
-            
-            return dance_class
-        
+            return self.dance_class_repo.create(dance_class)
         else:
             print('tu estas mal, todo el maldito mundo esta mal')
     
     def get(self):
-        return self.dance_classes
+        return self.dance_class_repo.get()
 
     def get_by_id(self, id: str):
-        for course in self.dance_classes:
-            if course.id == id:
-             return course
+        return self.dance_class_repo.get_by_id(id)
 

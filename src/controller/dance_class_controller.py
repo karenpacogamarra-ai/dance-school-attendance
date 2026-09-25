@@ -1,6 +1,7 @@
 
 from dto.dance_class_dto import DanceClassCreate
 from fastapi import APIRouter, Depends
+from repository.dance_class_repository import DanceClassRepository
 from service.dance_class_service import DanceClassService
 
 
@@ -8,7 +9,8 @@ router = APIRouter()
 dance_classes = []
 
 def get_dance_class_service():
-    return DanceClassService(dance_classes)
+    dance_class_repo = DanceClassRepository(dance_classes)
+    return DanceClassService(dance_class_repo)
     
     
 
